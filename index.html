@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>IIUC Admission CBT — Universe Prep</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- ░░░ PARTICLES CANVAS ░░░ -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ░░░ LOADING SCREEN ░░░ -->
+    <div id="loadingScreen">
+      <div class="loader-inner">
+        <div class="loader-logo">UNIVERSE</div>
+        <div class="loader-bar"><div class="loader-fill"></div></div>
+        <div class="loader-text">Initializing Exam System...</div>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: LANDING ░░░ -->
+    <div id="page-landing" class="page active">
+      <nav class="topbar">
+        <div class="logo">◈ UNIVERSE</div>
+        <div class="nav-badges">
+          <span class="badge">Spring 2025</span>
+          <span class="badge badge-live">● LIVE</span>
+        </div>
+      </nav>
+
+      <div class="landing-hero">
+        <div class="hero-tag">Faculty of Science & Engineering · IIUC</div>
+        <h1 class="hero-title">
+          Admission<br /><span class="grad-text">CBT Simulator</span>
+        </h1>
+        <p class="hero-sub">
+          100 Questions · Physics · Chemistry · Mathematics · English ·
+          Analytical Aptitude
+        </p>
+        <div class="hero-stats">
+          <div class="stat-card">
+            <span class="stat-n">100</span><span class="stat-l">Questions</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-n">90</span><span class="stat-l">Minutes</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-n">5</span><span class="stat-l">Subjects</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-n">-0.25</span
+            ><span class="stat-l">Negative Mark</span>
+          </div>
+        </div>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="goTo('page-instructions')">
+            Begin Exam <span>→</span>
+          </button>
+          <button class="btn-ghost" onclick="goTo('page-instructions')">
+            View Instructions
+          </button>
+        </div>
+      </div>
+
+      <div class="subject-strips">
+        <div class="strip s-physics">Physics · 25Q</div>
+        <div class="strip s-chem">Chemistry · 15Q</div>
+        <div class="strip s-math">Mathematics · 30Q</div>
+        <div class="strip s-eng">English · 15Q</div>
+        <div class="strip s-apt">Aptitude · 15Q</div>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: INSTRUCTIONS ░░░ -->
+    <div id="page-instructions" class="page">
+      <nav class="topbar">
+        <button class="btn-back" onclick="goTo('page-landing')">← Back</button>
+        <div class="logo">◈ UNIVERSE</div>
+        <div></div>
+      </nav>
+      <div class="instructions-wrap">
+        <h2 class="instr-title">Exam Instructions</h2>
+        <div class="instr-grid">
+          <div class="instr-card">
+            <div class="instr-icon">⏱</div>
+            <h3>Duration</h3>
+            <p>90 minutes countdown. Auto-submit when timer ends.</p>
+          </div>
+          <div class="instr-card">
+            <div class="instr-icon">📋</div>
+            <h3>Questions</h3>
+            <p>100 MCQs across 5 subjects. Each correct answer = +1 mark.</p>
+          </div>
+          <div class="instr-card">
+            <div class="instr-icon">⚠️</div>
+            <h3>Negative Marking</h3>
+            <p>Wrong answer deducts 0.25 marks. Unanswered = 0.</p>
+          </div>
+          <div class="instr-card">
+            <div class="instr-icon">🔖</div>
+            <h3>Review Later</h3>
+            <p>Mark any question for review and return before submitting.</p>
+          </div>
+          <div class="instr-card">
+            <div class="instr-icon">⌨️</div>
+            <h3>Shortcuts</h3>
+            <p>← → to navigate · Space to mark review · 1-4 to answer</p>
+          </div>
+          <div class="instr-card">
+            <div class="instr-icon">📱</div>
+            <h3>Fullscreen</h3>
+            <p>Exam runs best in fullscreen mode. Anti-tab detection active.</p>
+          </div>
+        </div>
+        <div class="instr-agree">
+          <label class="checkbox-label">
+            <input type="checkbox" id="agreeCheck" onchange="toggleStart()" />
+            <span class="checkmark"></span>
+            I have read and understood all instructions
+          </label>
+          <button
+            class="btn-primary"
+            id="startBtn"
+            disabled
+            onclick="startExam()"
+          >
+            Start Exam →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: EXAM ░░░ -->
+    <div id="page-exam" class="page">
+      <!-- TOP BAR -->
+      <div class="exam-topbar">
+        <div class="exam-logo">◈ UNIVERSE</div>
+        <div class="exam-center">
+          <div class="timer-wrap">
+            <span class="timer-icon">⏱</span>
+            <span id="timerDisplay" class="timer-digits">90:00</span>
+          </div>
+        </div>
+        <div class="exam-actions">
+          <button
+            class="btn-icon"
+            onclick="toggleSound()"
+            title="Sound"
+            id="soundBtn"
+          >
+            🔊
+          </button>
+          <button
+            class="btn-icon"
+            onclick="toggleFullscreen()"
+            title="Fullscreen"
+          >
+            ⛶
+          </button>
+          <button class="btn-submit-top" onclick="confirmSubmit()">
+            Submit Exam
+          </button>
+        </div>
+      </div>
+
+      <!-- SUBJECT TABS -->
+      <div class="subject-tabs">
+        <button
+          class="stab active"
+          data-subject="Physics"
+          onclick="filterSubject('Physics', this)"
+        >
+          Physics
+        </button>
+        <button
+          class="stab"
+          data-subject="Chemistry"
+          onclick="filterSubject('Chemistry', this)"
+        >
+          Chemistry
+        </button>
+        <button
+          class="stab"
+          data-subject="Mathematics"
+          onclick="filterSubject('Mathematics', this)"
+        >
+          Math
+        </button>
+        <button
+          class="stab"
+          data-subject="English"
+          onclick="filterSubject('English', this)"
+        >
+          English
+        </button>
+        <button
+          class="stab"
+          data-subject="Aptitude"
+          onclick="filterSubject('Aptitude', this)"
+        >
+          Aptitude
+        </button>
+        <button class="stab stab-all" onclick="filterSubject('All', this)">
+          All
+        </button>
+      </div>
+
+      <div class="exam-layout">
+        <!-- SIDEBAR -->
+        <aside class="exam-sidebar">
+          <div class="sidebar-header">
+            <span class="sh-title">Question Palette</span>
+            <div class="palette-legend">
+              <span class="leg answered">✓ Done</span>
+              <span class="leg review">★ Review</span>
+              <span class="leg unattempted">○ Skip</span>
+            </div>
+          </div>
+          <div class="sidebar-search">
+            <input
+              type="text"
+              id="searchQ"
+              placeholder="Search questions..."
+              oninput="searchQuestions(this.value)"
+            />
+          </div>
+          <div class="palette-stats">
+            <span id="statAttempted" class="pstat answered">0 Attempted</span>
+            <span id="statReview" class="pstat review">0 Review</span>
+            <span id="statSkipped" class="pstat unattempted">100 Skipped</span>
+          </div>
+          <div class="question-palette" id="questionPalette"></div>
+        </aside>
+
+        <!-- MAIN QUESTION AREA -->
+        <main class="exam-main">
+          <div class="question-header">
+            <div class="qnum-badge" id="qNumBadge">Q 1 / 100</div>
+            <div class="qsubject-badge" id="qSubjectBadge">Physics</div>
+            <button
+              class="btn-bookmark"
+              id="bookmarkBtn"
+              onclick="toggleBookmark()"
+              title="Bookmark"
+            >
+              ☆
+            </button>
+            <button class="btn-review" id="reviewBtn" onclick="toggleReview()">
+              Mark for Review
+            </button>
+          </div>
+
+          <div class="question-card" id="questionCard">
+            <div class="question-text" id="questionText"></div>
+            <div class="options-grid" id="optionsGrid"></div>
+          </div>
+
+          <div class="exam-nav">
+            <button class="btn-nav" onclick="navigate(-1)">← Previous</button>
+            <div class="nav-center">
+              <span class="nav-info" id="navInfo">1 of 100</span>
+            </div>
+            <button class="btn-nav btn-nav-next" onclick="navigate(1)">
+              Next →
+            </button>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: REVIEW ░░░ -->
+    <div id="page-review" class="page">
+      <nav class="topbar">
+        <button class="btn-back" onclick="goTo('page-exam')">
+          ← Back to Exam
+        </button>
+        <div class="logo">Answer Review</div>
+        <button class="btn-primary small" onclick="finalSubmit()">
+          Submit Now
+        </button>
+      </nav>
+      <div class="review-wrap">
+        <div class="review-filters">
+          <button class="rfilt active" onclick="filterReview('all', this)">
+            All (100)
+          </button>
+          <button class="rfilt" onclick="filterReview('answered', this)">
+            Answered
+          </button>
+          <button class="rfilt" onclick="filterReview('unanswered', this)">
+            Unanswered
+          </button>
+          <button class="rfilt" onclick="filterReview('marked', this)">
+            Marked
+          </button>
+        </div>
+        <div id="reviewList" class="review-list"></div>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: RESULT ░░░ -->
+    <div id="page-result" class="page">
+      <div id="confettiCanvas"></div>
+      <div class="result-wrap">
+        <div class="result-hero">
+          <div class="result-score-ring">
+            <svg viewBox="0 0 120 120" class="ring-svg">
+              <circle cx="60" cy="60" r="54" class="ring-bg" />
+              <circle cx="60" cy="60" r="54" class="ring-fill" id="scoreRing" />
+            </svg>
+            <div class="ring-label">
+              <span id="resultScore" class="ring-score">0</span>
+              <span class="ring-max">/ 100</span>
+            </div>
+          </div>
+          <div class="result-meta">
+            <h2 id="resultTitle" class="result-title">Exam Complete!</h2>
+            <p id="resultMsg" class="result-msg"></p>
+            <div class="result-badges">
+              <div class="rb correct"><span id="rCorrect">0</span> Correct</div>
+              <div class="rb wrong"><span id="rWrong">0</span> Wrong</div>
+              <div class="rb skipped"><span id="rSkipped">0</span> Skipped</div>
+              <div class="rb accuracy">
+                <span id="rAccuracy">0</span>% Accuracy
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-grid">
+          <div class="rcard">
+            <h3>Subject Breakdown</h3>
+            <canvas id="subjectChart" width="320" height="200"></canvas>
+          </div>
+          <div class="rcard">
+            <h3>Performance Overview</h3>
+            <div id="subjectTable" class="subject-table"></div>
+          </div>
+          <div class="rcard">
+            <h3>Rank & Prediction</h3>
+            <div class="rank-panel" id="rankPanel"></div>
+          </div>
+          <div class="rcard">
+            <h3>Time Analysis</h3>
+            <canvas id="timeChart" width="320" height="200"></canvas>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn-primary" onclick="goTo('page-analytics')">
+            📊 Full Analytics
+          </button>
+          <button class="btn-ghost" onclick="showAnswerKey()">
+            📋 Answer Key
+          </button>
+          <button class="btn-ghost" onclick="restartExam()">
+            🔄 Retake Exam
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ░░░ PAGE: ANALYTICS ░░░ -->
+    <div id="page-analytics" class="page">
+      <nav class="topbar">
+        <button class="btn-back" onclick="goTo('page-result')">
+          ← Results
+        </button>
+        <div class="logo">Performance Analytics</div>
+        <div></div>
+      </nav>
+      <div class="analytics-wrap">
+        <div class="analytics-grid" id="analyticsGrid"></div>
+      </div>
+    </div>
+
+    <!-- ░░░ MODALS ░░░ -->
+    <div
+      id="submitModal"
+      class="modal-overlay"
+      onclick="closeModal('submitModal')"
+    >
+      <div class="modal-box" onclick="event.stopPropagation()">
+        <h3>Submit Exam?</h3>
+        <p id="submitModalMsg"></p>
+        <div class="modal-actions">
+          <button class="btn-ghost" onclick="closeModal('submitModal')">
+            Continue Exam
+          </button>
+          <button class="btn-danger" onclick="finalSubmit()">Submit Now</button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="answerKeyModal"
+      class="modal-overlay"
+      onclick="closeModal('answerKeyModal')"
+    >
+      <div class="modal-box modal-lg" onclick="event.stopPropagation()">
+        <h3>Answer Key & Explanations</h3>
+        <div id="answerKeyContent" class="answer-key-content"></div>
+        <button class="btn-ghost" onclick="closeModal('answerKeyModal')">
+          Close
+        </button>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
